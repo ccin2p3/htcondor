@@ -22,6 +22,14 @@
 # Sets COLLECTOR_NAME in 22_manager.config
 # Default: 'Personal Condor at $(FULL_HOSTNAME)'
 #
+# [*collector_query_workers*]
+# Sets COLLECTOR_QUERY_WORKERS in 22_manager.config
+# Default: 16
+#
+# [*collector_max_file_descriptors*]
+# Sets COLLECTOR_MAX_FILE_DESCRIPTORS in 22_manager.config if defined
+# Default: undef
+#
 # [*schedulers*]
 # List of schedulers that are allowed to submit jobs to the HTCondor pool
 #
@@ -80,6 +88,10 @@
 # [*pool_password*]
 # Path to pool password file.
 #
+# [*users_list*]
+# customize the list of users in SCHEDD.ALLOW_WRITE
+# Default: *@$(UID_DOMAIN)
+#
 # [*uid_domain*]
 # Condor UID_DOMAIN
 # Default: example.com
@@ -112,6 +124,8 @@ class htcondor (
   $cluster_has_multiple_domains   =
   $htcondor::params::cluster_has_multiple_domains,
   $collector_name                 = $htcondor::params::collector_name,
+  $collector_query_workers        = $htcondor::params::collector_query_workers,
+  $collector_max_file_descriptors = $htcondor::params::collector_max_file_descriptors,
   $email_domain                   = $htcondor::params::email_domain,
   $schedulers                     = $htcondor::params::schedulers,
   $admin_email                    = $htcondor::params::admin_email,
@@ -175,6 +189,7 @@ class htcondor (
   $leave_job_in_queue             = $htcondor::params::leave_job_in_queue,
   $ganglia_cluster_name           = $htcondor::params::ganglia_cluster_name,
   $pool_password                  = $htcondor::params::pool_password_file,
+  $users_list                     = $htcondor::params::users_list,
   $uid_domain                     = $htcondor::params::uid_domain,
   $default_domain_name            = $htcondor::params::default_domain_name,
   $filesystem_domain              = $htcondor::params::filesystem_domain,
