@@ -1,12 +1,27 @@
+# @summary
+# This class is used to configure the security settings for HTCondor.
+#
+# @param krb_srv_keytab
+#   the path to the keytab file for the HTCondor service
+#
+# @param krb_srv_principal
+#    the principal name for the HTCondor service
+# 
+# @param krb_srv_user
+#   the user name for the HTCondor service
+#
+# @param krb_srv_service [String] The service name for the HTCondor service.
+# @param krb_client_keytab [String] The path to the keytab file for the HTCondor client.
+# @param krb_mapfile_entries [Array] An array of entries for the Kerberos mapfile.
+#
 class htcondor::config::security (
-  $krb_srv_keytab      = $htcondor::krb_srv_keytab,
-  $krb_srv_principal   = $htcondor::krb_srv_principal,
-  $krb_srv_user        = $htcondor::krb_srv_user,
-  $krb_srv_service     = $htcondor::krb_srv_service,
-  $krb_client_keytab   = $htcondor::krb_client_keytab,
-  $krb_mapfile_entries = $htcondor::krb_mapfile_entries,
-)
-{
+  String $krb_srv_keytab      = $htcondor::krb_srv_keytab,
+  String $krb_srv_principal   = $htcondor::krb_srv_principal,
+  String $krb_srv_user        = $htcondor::krb_srv_user,
+  String $krb_srv_service     = $htcondor::krb_srv_service,
+  String $krb_client_keytab   = $htcondor::krb_client_keytab,
+  Hash $krb_mapfile_entries = $htcondor::krb_mapfile_entries,
+) {
   # general - manifest or 1 or more configs
   $condor_user                  = $htcondor::condor_user
   $condor_group                 = $htcondor::condor_group
@@ -59,7 +74,7 @@ class htcondor::config::security (
   $template_security            = $htcondor::template_security
 
   $auth_string                  = construct_auth_string($use_fs_auth,
-  $use_password_auth, $use_kerberos_auth, $use_claim_to_be_auth,
+    $use_password_auth, $use_kerberos_auth, $use_claim_to_be_auth,
   $use_anonymous_auth, $use_ssl_auth)
 
   # because HTCondor uses user 'condor_pool' for remote access
@@ -99,7 +114,7 @@ class htcondor::config::security (
     # 06/12/14 15:38:40 error: SEC_PASSWORD_FILE must be owned by Condor's real
     # uid
     file { '/etc/condor/pool_password':
-      ensure => present,
+      ensure => file,
       source => $pool_password_file,
       owner  => root,
       group  => root,
@@ -109,7 +124,7 @@ class htcondor::config::security (
 
   if $use_cert_map_file {
     file { $cert_map_file:
-      ensure => present,
+      ensure => file,
       source => $cert_map_file_source,
       owner  => $condor_user,
       group  => $condor_group,
@@ -119,7 +134,7 @@ class htcondor::config::security (
   if $use_kerberos_auth {
     if $use_krb_map_file {
       file { $krb_map_file:
-        ensure  => present,
+        ensure  => file,
         content => template($krb_map_file_template),
         owner   => $condor_user,
         group   => $condor_group,

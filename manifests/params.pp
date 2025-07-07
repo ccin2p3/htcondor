@@ -42,12 +42,11 @@ class htcondor::params {
   if $facts['os']['family'] == 'RedHat' and $facts['os']['release']['major'] == '7' {
     $htcondor_cgroup_default = '/system.slice/condor.service'
   }
-  else{
+  else {
     $htcondor_cgroup_default = 'htcondor'
   }
   $htcondor_cgroup                = hiera('htcondor_cgroup', $htcondor_cgroup_default)
   $cgroup_memory_limit            = hiera('cgroup_memory_limit', 'soft')
-
 
   $high_priority_groups           = hiera_hash('high_priority_groups', undef)
 
@@ -60,7 +59,7 @@ class htcondor::params {
     'CMS.production' => {
       priority_factor => 10000.00,
       dynamic_quota   => 0.95,
-    }
+    },
   }
   $accounting_groups              = hiera_hash('accounting_groups',
   $default_accounting_groups)
@@ -78,15 +77,17 @@ class htcondor::params {
   false)
   $install_repositories           = hiera('install_repositories', true)
   $gpgcheck                       = hiera('gpgcheck', true)
-  $gpgkey                         = hiera('gpgkey', 'http://htcondor.org/yum/RPM-GPG-KEY-HTCondor')
+  $gpgkey                         = hiera('gpgkey', 'https://research.cs.wisc.edu/htcondor/repo/keys/RPM-GPG-KEY-HTCondor')
+  $apt_key_id                     = hiera('apt_key_id', '4B9D355DF3674E0E272D2E0A973FC7D2670079F6')
+  $apt_key_source                 = hiera('apt_key_source', 'https://research.cs.wisc.edu/htcondor/repo/keys/HTCondor-Release.gpg.key')
   $condor_major_version           = hiera('condor_major_version', '8.8')
   $versioned_repos                = hiera('versioned_repos', false)
   $dev_repositories               = hiera('dev_repositories', false)
 
   $machine_owner                  = hiera('machine_owner', 'physics')
 
-  $number_of_cpus                 = hiera('number_of_cpus', $::processors['count'
-    ])
+  $number_of_cpus                 = hiera('number_of_cpus', $facts['processors']['count'],
+  )
 
   $partitionable_slots            = hiera('partitionable_slots', true)
   $memory_overcommit              = hiera('memory_overcommit', 1.5)
@@ -111,7 +112,7 @@ class htcondor::params {
 
   $uid_domain                     = hiera('uid_domain', 'example.org')
   $default_domain_name            = hiera('default_domain_name', $uid_domain)
-  $filesystem_domain              = hiera('filesystem_domain', $::fqdn)
+  $filesystem_domain              = hiera('filesystem_domain', $facts['networking']['fqdn'])
 
   $use_accounting_groups          = hiera('use_accounting_groups', false)
   $use_htcondor_account_mapping   = hiera('use_htcondor_account_mapping', true)
@@ -158,7 +159,7 @@ class htcondor::params {
 
   # for private networks
   $uses_connection_broker         = hiera('uses_connection_broker', false)
-  $private_network_name           = hiera('private_network_name', $::domain)
+  $private_network_name           = hiera('private_network_name', $facts['networking']['domain'])
 
   # Schedd configuration
   $schedd_blocked_users           = hiera_array('schedd_blocked_users', [])
@@ -167,7 +168,10 @@ class htcondor::params {
   # Job default resource requests. These are interpreted as expressions.
   $job_default_requestcpus        = hiera('job_default_requestcpus', '1')
   $job_default_requestdisk        = hiera('job_default_requestdisk', 'DiskUsage')
-  $job_default_requestmemory      = hiera('job_default_requestmemory', 'ifthenelse(MemoryUsage =!= UNDEFINED,MemoryUsage,(ImageSize+1023)/1024)')
+  $job_default_requestmemory      = hiera(
+    'job_default_requestmemory',
+    'ifthenelse(MemoryUsage =!= UNDEFINED,MemoryUsage,(ImageSize+1023)/1024)'
+  )
 
   # SharedPort service configuration
   $use_shared_port                = hiera('use_shared_port', false)
